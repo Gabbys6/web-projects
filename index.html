@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Semester Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fce4ec; /* Light pink background */
+            color: #333;
+        }
+        h1 {
+            color: #d81b60; /* Pink color for header */
+        }
+        .container {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+        .section {
+            border: 2px solid #f06292; /* Pink border for sections */
+            padding: 10px;
+            width: 200px;
+            height: 400px;
+            overflow-y: auto;
+            background-color: #f8bbd0; /* Light pink background for each section */
+        }
+        .course {
+            padding: 10px;
+            margin: 5px;
+            background-color: #f8bbd0; /* Light pink course background */
+            border: 1px solid #f06292; /* Pink border around course items */
+            cursor: pointer;
+            color: #880e4f; /* Darker pink text color */
+        }
+        .course:hover {
+            background-color: #f48fb1; /* Hover effect with a slightly darker pink */
+        }
+        .course-details {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f8bbd0; /* Light pink background for details */
+            border: 1px solid #f06292; /* Pink border for details */
+            display: none;
+        }
+        h2 {
+            color: #d81b60; /* Pink color for section headers */
+        }
+    </style>
+</head>
+<body>
+
+<h1>Course Semester Tracker</h1>
+
+<div id="course-details" class="course-details">
+    <h3>Course Details</h3>
+    <p id="course-name"></p>
+    <p id="course-prereqs"></p>
+</div>
+
+<div class="container">
+    <div id="course-list" class="section" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <h2>Available Courses</h2>
+    </div>
+    <div id="semester-1" class="section" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <h2>Semester 1</h2>
+    </div>
+    <div id="semester-2" class="section" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <h2>Semester 2</h2>
+    </div>
+    <div id="semester-3" class="section" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <h2>Semester 3</h2>
+    </div>
+</div>
+
+<script>
+    // Course list with objects
+    const courses = [
+        { name: "Math 101", prereqs: "None" },
+        { name: "History 201", prereqs: "Math 101" },
+        { name: "Computer Science 301", prereqs: "Math 101, History 201" },
+        { name: "Art 101", prereqs: "None" },
+        { name: "Physics 201", prereqs: "Math 101" }
+    ];
+
+    // Function to display courses in the available courses section
+    function loadCourses() {
+        const courseList = document.getElementById("course-list");
+        courseList.innerHTML = "<h2>Available Courses</h2>";  // Reset the list
+        
+        courses.forEach(course => {
+            const courseDiv = document.createElement("div");
+            courseDiv.className = "course";
+            courseDiv.textContent = course.name;
+            courseDiv.setAttribute("draggable", "true");
+            courseDiv.setAttribute("data-course-name", course.name);
+            courseDiv.setAttribute("data-course-prereqs", course.prereqs);
+            courseDiv.ondragstart = drag;
+            courseList.appendChild(courseDiv);
+        });
+    }
+
+    // Display course details when clicked
+    function showCourseDetails(courseName, prereqs) {
+        const detailsDiv = document.getElementById("course-details");
+        document.getElementById("course-name").textContent = `Course: ${courseName}`;
+        document.getElementById("course-prereqs").textContent = `Prerequisites: ${prereqs}`;
+        detailsDiv.style.display = "block";
+    }
+
+    // Dragging functions
+    function allowDrop(event) {
+        event.preventDefault();
+    }
+
+    function drag(event) {
+        event.dataTransfer.setData("courseName", event.target.getAttribute("data-course-name"));
+        event.dataTransfer.setData("coursePrereqs", event.target.getAttribute("data-course-prereqs"));
+    }
+
+    function drop(event) {
+        event.preventDefault();
+        const courseName = event.dataTransfer.getData("courseName");
+        const coursePrereqs = event.dataTransfer.getData("coursePrereqs");
+
+        const courseDiv = document.createElement("div");
+        courseDiv.className = "course";
+        courseDiv.textContent = courseName;
+        courseDiv.setAttribute("draggable", "true");
+        courseDiv.setAttribute("data-course-name", courseName);
+        courseDiv.setAttribute("data-course-prereqs", coursePrereqs);
+        courseDiv.ondragstart = drag;
+
+        // Append the course to the dropped section
+        event.target.appendChild(courseDiv);
+
+        // Show course details when dropped
+        showCourseDetails(courseName, coursePrereqs);
+    }
+
+    // Load courses when the page is ready
+    window.onload = loadCourses;
+</script>
+
+</body>
+</html>
